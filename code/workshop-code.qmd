@@ -48,8 +48,6 @@ drought_exp <- read_xlsx(
   here("data", "Valliere_etal_EcoApps_Data.xlsx"),
   sheet = "First Harvest"
 )
-
-
 ```
 
 ```{r}
@@ -69,7 +67,7 @@ ds_col <- "#A62F03"
 ww_col <- "#045CB4"
 
 # storing a ggplot theme (that will be used for all ggplots)
-theme_set(theme_bw())
+theme_set(theme_minimal())
 ```
 
 
@@ -80,12 +78,12 @@ Data source: Valliere, Justin; Zhang, Jacqueline; Sharifi, M.; Rundel, Philip (2
 ```{r}
 #| label: data cleaning
 
-# 
-drought_exp_clean <- drought_exp 
-  # 
-  clean_names() 
-  # 
-  mutate(species_name = case_match(
+# creating new object from drought_exp
+drought_exp_clean <- drought_exp |>  
+  # making column names lowercase with underscores 
+  clean_names() |> 
+  # changing the abbreviations to the whole name in new column
+  mutate(species_name = recode_values(
     species,
     "ENCCAL" ~ "Encelia californica", # bush sunflower
     "ESCCAL" ~ "Eschscholzia californica", # California poppy
@@ -94,14 +92,14 @@ drought_exp_clean <- drought_exp
     "SALLEU" ~ "Salvia leucophylla", # purple sage
     "STIPUL" ~ "Stipa pulchra", # purple needlegrass
     "LOTSCO" ~ "Lotus scoparius" # deerweed
-  )) 
-  # 
+  )) |> 
+  # creating new column with full name for treatment 
   mutate(water_treatment = case_match(
     water,
     "WW" ~ "Well watered",
     "DS" ~ "Drought stressed"
-  ))  
-  # 
+  ))  |> 
+  # reordering species levels 
   mutate(species_name = as_factor(species_name),
          species_name = fct_relevel(species_name,
                                     "Lotus scoparius",
@@ -110,22 +108,34 @@ drought_exp_clean <- drought_exp
                                     "Encelia californica",
                                     "Stipa pulchra",
                                     "Eschscholzia californica",
-                                    "Grindelia camporum")) 
+                                    "Grindelia camporum")) |> 
+# reordering water treatment levels 
   mutate(water_treatment = as_factor(water_treatment),
          water_treatment = fct_relevel(water_treatment,
                                        "Drought stressed",
-                                       "Well watered")) 
-  #
+                                       "Well watered")) |> 
+  # selecting for desired columns  
   select(species_name, water_treatment, sla, total_g)
 ```
 
 Insert code to double check the structure of the data frame here.  
 
+```{r}
+#| label: checking-structure
+
+str(drought_exp_clean)
+```
 
 
 
 Insert code to display 10 random rows from the data frame here.  
 
+```{r}
+#| label: ten-rows
+slice_sample(
+  drought_exp_clean, # data frame to display 
+  n = 10) # displaying 10 rows 
+```
 
 
 
