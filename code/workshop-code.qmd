@@ -44,7 +44,10 @@ library(ggeffects) # getting model predictions
 library(MuMIn) # model selection
 
 # read in your data here
-
+drought_exp <- read_xlsx(
+  here("data", "Valliere_etal_EcoApps_Data.xlsx"),
+  sheet = "First Harvest"
+)
 
 
 ```
